@@ -1,0 +1,108 @@
+Step # 01 : Create a Dynamic Content Region
+=> Source Type : PL/SQL Function Body returning a CLOB
+=> PL/SQL Block :
+ 
+DECLARE
+ lreport clob;
+BEGIN
+  FOR R1 IN (
+      SELECT II.ITEM_CODE,
+             II.ITEM_NAME,
+             IP.ITEM_MRP,
+             ROUND(IP.ITEM_MRP - (NVL(IP.ITEM_MRP,0)*NVL(DISC_PCT,0))/100) AS DIS_PRICE,
+             IP.IS_VAT,
+             IP.ITEM_VAT,
+             IP.IS_DISC,
+             IP.DISC_PCT,
+             IC.CAT_NAME,
+             ISC.SUBCAT_NAME,
+             CASE WHEN II.CAT_ID IN (2,3,4) THEN 'Sandwiche.jpg' ELSE 'Food_Burger.jpg' END AS IMG
+      FROM BBLS_ITEM_INFO II,
+           BBLS_ITEM_PRICE IP,
+           BBLS_ITEM_CAT IC,
+           BBLS_ITEM_SUBCAT ISC
+      WHERE IP.ITEM_ID = II.ITEM_ID
+      AND II.CAT_ID = IC.CAT_ID
+      AND II.SUBCAT_ID = ISC.SUBCAT_ID
+  ) LOOP
+
+lreport := lreport||' <div class="combo-card">
+                        <div class="combo-img">
+                           <img src="'||v('APP_FILES')||R1.IMG||'">
+                              <div class="price-tag">
+                                 <span class="old">MRP: &#2547;'||R1.ITEM_MRP||'</span>
+                                    &#2547;'||R1.DIS_PRICE||'
+                              </div>
+                          </div>
+
+                          <div class="combo-body">
+                             <div class="combo-code">'||R1.ITEM_CODE||'</div>
+                                <div class="combo-name">'||R1.ITEM_NAME||'</div>
+                           </div>
+                       </div>';
+     END LOOP;
+lreport := lreport ||'</div>';
+  return lreport;
+END;
+
+
+Step # 02 : Inline CSS Code
+
+.combo-container {
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+.combo-card {
+    width: 150px;
+    border:1px solid #701c1c;
+    border-radius:8px;
+    overflow:hidden;
+    background:#ddd;
+    box-shadow:0 3px 8px rgba(0,0,0,0.15);
+    font-family:Arial;
+}
+.combo-img {
+    position:relative;
+}
+.combo-img img {
+    width:100%;
+    height:160px;
+    object-fit:cover;
+}
+.price-tag {
+    position:absolute;
+    top:5px;
+    right:5px;
+    background:#1e40af;
+    color:#fff;
+    padding:3px 5px;
+    font-size:13px;
+    font-weight:bold;
+    border-radius:6px;
+}
+-- .price-tag .old {
+-- color:#ff4d4d;
+-- text-decoration:line-through;
+-- margin-right:5px;
+-- }
+.price-tag .old {
+    -- color:#ff4d4d;
+    text-decoration:line-through;
+    margin-right:5px;
+    text-decoration-color: red;
+    text-decoration-thickness: 2.5px;
+}
+.combo-body {
+    padding:10px;
+    text-align:center;
+}
+.combo-code {
+    font-size:12px;
+    color:#777;
+    margin-bottom:4px;
+}
+.combo-name {
+    font-size:15px;
+    font-weight:bold;
+}

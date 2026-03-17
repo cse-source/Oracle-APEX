@@ -33,7 +33,7 @@ CSS
 ## 📁 Dynamic Region File
 
 ## 📁 CSS File
-
+```
 frontend/css/combo-card.css
 
 .combo-container{
@@ -78,6 +78,7 @@ text-decoration-thickness:2px;
 padding:10px;
 text-align:center;
 }
+```
 
 ## 📁 Deployment Outlook
 <img width="858" height="258" alt="image" src="https://github.com/user-attachments/assets/47243e7c-e0b1-4767-98fd-c0ec91a8f962" />
